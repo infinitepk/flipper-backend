@@ -68,28 +68,21 @@ if (latitude && longitude) {
 
     try {
         const reverseResponse = await axios.get(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-            {
-                headers: {
-                    "User-Agent": "Flipper Weather Engine",
-                },
-                timeout: 5000,
-            }
-        );
+    `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`,
+    {
+        timeout: 5000,
+    }
+);
 
-        console.log("Reverse geocoding response:", reverseResponse.data);
+const data = reverseResponse.data;
 
-const address = reverseResponse.data.address;
-console.log("Address:", address);
+location.city =
+    data.city ||
+    data.locality ||
+    data.localityInfo?.administrative?.[2]?.name ||
+    "Current Location";
 
-        location.city =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.state_district ||
-            "Current Location";
-
-        location.country = address.country || "";
+location.country = data.countryName || "";
 
     } catch (err) {
     console.error("Reverse geocoding failed:", err.message);

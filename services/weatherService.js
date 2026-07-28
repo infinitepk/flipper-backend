@@ -77,7 +77,10 @@ if (latitude && longitude) {
             }
         );
 
-        const address = reverseResponse.data.address;
+        console.log("Reverse geocoding response:", reverseResponse.data);
+
+const address = reverseResponse.data.address;
+console.log("Address:", address);
 
         location.city =
             address.city ||
@@ -89,8 +92,8 @@ if (latitude && longitude) {
         location.country = address.country || "";
 
     } catch (err) {
-        console.warn("Reverse geocoding failed:", err.message);
-    }
+    console.error("Reverse geocoding failed:", err.message);
+}
 
 } else {
 

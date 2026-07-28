@@ -19,7 +19,8 @@ router.get("/", async (req, res) => {
 
     } catch (err) {
 
-        console.error(err);
+        console.error("Weather Error:");
+console.error(err.response?.data || err.message || err);
 
         res.status(500).json({
             error: "Unable to fetch weather"

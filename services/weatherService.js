@@ -66,11 +66,37 @@ if (latitude && longitude) {
         country: "",
     };
 
+    try {
+        const reverseResponse = await axios.get(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
+            {
+                headers: {
+                    "User-Agent": "Flipper Weather Engine",
+                },
+                timeout: 5000,
+            }
+        );
+
+        const address = reverseResponse.data.address;
+
+        location.city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.state_district ||
+            "Current Location";
+
+        location.country = address.country || "";
+
+    } catch (err) {
+        console.warn("Reverse geocoding failed:", err.message);
+    }
+
 } else {
 
     location = await getCoordinates(city);
 
-}     
+}   
     const cacheKey = `${location.latitude},${location.longitude}`;
 
     const cached = weatherCache.get(cacheKey);

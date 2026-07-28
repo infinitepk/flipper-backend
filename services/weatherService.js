@@ -88,13 +88,17 @@ if (
 
 
 
-    const response = await axios.get(url);
+   console.log("Fetching forecast...");
+const response = await axios.get(url);
+console.log("Forecast OK");
 
 // AQI API
 const airQualityUrl =
 `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${location.latitude}&longitude=${location.longitude}&current=us_aqi`;
 
+console.log("Fetching AQI...");
 const airQualityResponse = await axios.get(airQualityUrl);
+console.log("AQI OK");
 
 const current = response.data.current;
 

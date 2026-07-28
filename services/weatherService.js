@@ -59,41 +59,18 @@ async function getWeather(city, latitude, longitude) {
 
 if (latitude && longitude) {
 
-   if (latitude && longitude) {
-
-    const reverseUrl =
-        `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`;
-
-    const reverseResponse = await axios.get(reverseUrl, {
-        headers: {
-            "User-Agent": "Flipper Weather"
-        }
-    });
-
     location = {
         latitude: Number(latitude),
         longitude: Number(longitude),
-        city:
-            reverseResponse.data.address.city ||
-            reverseResponse.data.address.town ||
-            reverseResponse.data.address.village ||
-            "Unknown",
-        country:
-            reverseResponse.data.address.country,
+        city: "Current Location",
+        country: "",
     };
 
 } else {
 
     location = await getCoordinates(city);
 
-}
-
-} else {
-
-    location = await getCoordinates(city);
-
-}
-     
+}     
     const cacheKey = `${location.latitude},${location.longitude}`;
 
     const cached = weatherCache.get(cacheKey);

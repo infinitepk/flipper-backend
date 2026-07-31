@@ -1,13 +1,18 @@
 const createProvider = require("./createProvider");
 
 module.exports = createProvider({
-    name: "Archaeology Magazine",
+  name: "Archaeology Magazine",
 
-    categories: [
-        "history",
+  categories: [
+    "history",
+  ],
+
+  rssFeeds: {
+    history: [
+      {
+        source: "Archaeology Magazine",
+        url: "https://archaeology.org/feed/",
+      },
     ],
-
-    rssFeeds: {
-        history: "https://www.archaeology.org/rss.xml",
-    },
+  },
 });

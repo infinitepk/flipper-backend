@@ -1,14 +1,13 @@
-const { syncCategory } = require("./services/news/sync/rssSyncService");
 
-async function test() {
-  try {
-    await syncCategory("scitech");
-    console.log("Sync complete!");
-  } catch (err) {
+require("dotenv").config();
+const { runShortsSync } = require("./services/news/sync/shortsSyncService");
+
+runShortsSync()
+  .then(() => {
+    console.log("Done");
+    process.exit(0);
+  })
+  .catch((err) => {
     console.error(err);
-  }
-
-  process.exit();
-}
-
-test();
+    process.exit(1);
+  });

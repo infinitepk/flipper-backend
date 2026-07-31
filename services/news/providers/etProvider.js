@@ -6,7 +6,7 @@ module.exports = createProvider({
     categories: [
         "india",
         "business",
-        "scitech",
+       
     ],
 
     rssFeeds: {

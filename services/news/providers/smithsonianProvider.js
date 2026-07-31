@@ -1,16 +1,22 @@
 const createProvider = require("./createProvider");
 
 module.exports = createProvider({
-    name: "Smithsonian",
+  name: "Smithsonian",
 
-    categories: [
-        "history",
-      
-    
+  categories: [
+    "history",
+  ],
+
+  rssFeeds: {
+    history: [
+      {
+        source: "Smithsonian",
+        url: "https://www.smithsonianmag.com/rss/history/",
+      },
     ],
-
-    rssFeeds: {
-        history: "https://www.smithsonianmag.com/rss/history/",
-       
-    },
+  },
 });
+
+
+
+//https://www.indiatoday.in/education-today/gk-and-current-affairs/history

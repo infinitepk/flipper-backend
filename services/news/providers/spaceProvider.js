@@ -32,22 +32,24 @@ module.exports = createProvider({
       source: "NASA Science",
       url: "https://science.nasa.gov/feed/",
     },
-    {
-      source: "NASA JPL",
-      url: "https://www.jpl.nasa.gov/feeds/news/",
-    },
+    
     {
       source: "ESA",
       url: "https://www.esa.int/rssfeed/Our_Activities/Space_Engineering_Technology",
     },
+
     {
-      source: "ESA Science",
-      url: "https://sci.esa.int/newssyndication/rss/sciweb.xml",
-    },
+  source: "NASA CNEOS",
+  url: "https://cneos.jpl.nasa.gov/feed/news.xml",
+},
     {
-      source: "JAXA",
-      url: "https://global.jaxa.jp/press/rss.xml",
-    },
+  source: "NASA Technology",
+  url: "https://www.nasa.gov/news-release/feed/"
+},
+ 
+
+  
+   
   ],
 },
 });

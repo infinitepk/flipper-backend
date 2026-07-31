@@ -9,7 +9,6 @@ module.exports = createProvider({
         "business",
         "sports",
         "entertainment",
-        "scitech",
     ],
 
     rssFeeds: {

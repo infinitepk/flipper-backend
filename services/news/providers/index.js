@@ -1,4 +1,4 @@
-const toiProvider = require("./toiProvider");
+const toiApiProvider = require("./toiApiProvider");
 const bbcProvider = require("./bbcProvider");
 const hinduProvider = require("./hinduProvider");
 const indianExpressProvider = require("./indianExpressProvider");
@@ -12,14 +12,10 @@ const dwProvider = require("./dwProvider");
    const aljazeeraProvider = require("./aljazeeraProvider");
 const cnbcProvider = require("./cnbcProvider");
 
-const mongabayProvider = require("./mongabayProvider");
+const natureProvider = require("./natureProvider");
 const etProvider = require("./etProvider");
 
 const news18Provider = require("./news18Provider");
-
-const archaeologyProvider = require("./archaeologyProvider");
-
-const smithsonianProvider = require("./smithsonianProvider");
 
 const historyProvider = require("./historyProvider");
 
@@ -30,10 +26,11 @@ const travelProvider = require("./travelProvider");
 
 
 
+
   
 
-module.exports = [
-  toiProvider,
+const providers = [
+  toiApiProvider,
   bbcProvider,
   hinduProvider,
   indianExpressProvider,
@@ -47,12 +44,17 @@ module.exports = [
   techcrunchProvider,
   aljazeeraProvider,
   cnbcProvider,
-  mongabayProvider,
+  natureProvider,
   etProvider,
   news18Provider,
-  archaeologyProvider,
-  smithsonianProvider,
   historyProvider,
   globalentertainmentProvider,
   travelProvider,
+ 
 ];
+
+// Temporary for testing
+//module.exports = [shortsProvider];
+
+// Normal
+module.exports = providers;

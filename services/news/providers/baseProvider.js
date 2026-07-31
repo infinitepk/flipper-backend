@@ -11,10 +11,22 @@ async function fetchArticles({
 
   let items = [];
 
-  for (const url of rssUrls) {
+for (const url of rssUrls) {
+  console.log(`Fetching: ${url}`);
+
+  try {
     const feed = await parser.parseURL(url);
+
+    console.log(`Success: ${url}`);
+
     items.push(...feed.items);
+  } catch (err) {
+    console.error(`Failed: ${url}`);
+    console.error(err);
+
+    throw err;
   }
+}
 
   // Keep only the newest 50 articles
   items.sort(

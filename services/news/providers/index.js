@@ -54,7 +54,7 @@ const providers = [
 ];
 
 // Temporary for testing
-//module.exports = [shortsProvider];
+module.exports = [globalentertainmentProvider];
 
 // Normal
-module.exports = providers;
+// module.exports = providers;

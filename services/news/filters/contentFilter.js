@@ -24,6 +24,7 @@ const BLOCKED_KEYWORDS = [
 
   "live blog",
   "live updates",
+  "quiz",
 ];
 
 

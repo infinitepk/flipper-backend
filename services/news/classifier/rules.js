@@ -51,7 +51,7 @@ module.exports = {
         threshold: 5,
 
         keywords: {
-            tiger: 5,
+            tiger: 4,
             lion: 4,
             elephant: 4,
             forest: 3,
@@ -111,9 +111,9 @@ lothal: 6,
 rakhigarhi: 6,
 
     // Indian dynasties
-    maurya: 5,
+    maurya: 4,
     mauryan: 5,
-    gupta: 5,
+    gupta: 4,
     chola: 5,
     pandya: 5,
     pallava: 5,

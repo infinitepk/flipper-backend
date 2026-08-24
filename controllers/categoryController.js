@@ -2,7 +2,6 @@ const {
     findByCategory,
     countByCategory,
 } = require("../database/repositories/articleRepository");
-const { isWeatherArticle } = require("../utils/weatherArticleFilter");
 
 async function getCategory(req, res) {
 
@@ -24,15 +23,6 @@ const excludeIds = req.query.exclude
 );
 const total = await countByCategory(category);
 const hasMore = page * limit < total;
-
-    if (category === "weather") {
-        articles = articles.filter(article => isWeatherArticle(article));
-    } else {
-        articles = articles.filter(article => !isWeatherArticle(article));
-    }
-
-console.log("Articles found:", articles.length);
-console.log("First article:", articles[0]);
 
     res.json({
     page,

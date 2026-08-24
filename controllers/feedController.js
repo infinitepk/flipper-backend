@@ -1,4 +1,4 @@
-const { isWeatherArticle } = require("../utils/weatherArticleFilter");
+
 const {
     findById,
     findByCategory,
@@ -32,15 +32,7 @@ console.log("FEED API HIT");
  console.log(category, articles.length);
 
 
-        categoryArticles[category] = articles.filter(article => {
-
-            if (category === "weather")  {
-                return isWeatherArticle(article);
-            }
-
-            return !isWeatherArticle(article);
-
-        });
+       categoryArticles[category] = articles;
 
     }
 

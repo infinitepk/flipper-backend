@@ -3,26 +3,26 @@ function buildSummary(article) {
   const content = (article.textContent || "").trim();
 
   const clean = (text) =>
-  text
-    .replace(/\s+/g, " ")
-    .replace(/\s+\./g, ".")
-    .replace(/\s+,/g, ",")
-    .replace(/\s+\|/g, " |")
+    text
+      .replace(/\s+/g, " ")
+      .replace(/\s+\./g, ".")
+      .replace(/\s+,/g, ",")
+      .replace(/\s+\|/g, " |")
 
-    // Image/photo metadata
-    .replace(/\bPhoto Credit\s*:\s*[^|.]+\.?/gi, "")
-    .replace(/\bImage Credit\s*:\s*[^|.]+\.?/gi, "")
-    .replace(/\bImage used for representational purposes only\.?/gi, "")
-    .replace(/\bRepresentational (image|photo)\.?/gi, "")
+      // Image/photo metadata
+      .replace(/\bPhoto Credit\s*:\s*[^|.]+\.?/gi, "")
+      .replace(/\bImage Credit\s*:\s*[^|.]+\.?/gi, "")
+      .replace(/\bImage used for representational purposes only\.?/gi, "")
+      .replace(/\bRepresentational (image|photo)\.?/gi, "")
 
-    // Common byline metadata
-    .replace(/\bBy\s+[A-Z][A-Za-z.\s'-]{2,80}(?=\s*[|.]|$)/g, "")
+      // Common byline metadata
+      .replace(/\bBy\s+[A-Z][A-Za-z.\s'-]{2,80}(?=\s*[|.]|$)/g, "")
 
-    // Remove leftover separators
-    .replace(/\s*\|\s*/g, " ")
+      // Remove leftover separators
+      .replace(/\s*\|\s*/g, " ")
 
-    .replace(/\s+/g, " ")
-    .trim();
+      .replace(/\s+/g, " ")
+      .trim();
 
   const summary = clean(excerpt);
   const fullText = clean(content);
@@ -36,22 +36,7 @@ function buildSummary(article) {
   const selected = [];
   const seen = new Set();
 
-  // Start with the existing excerpt.
-  for (const sentence of excerptSentences) {
-    const cleanSentence = sentence.trim();
-
-    if (!cleanSentence) continue;
-
-    const key = cleanSentence.toLowerCase();
-
-    if (!seen.has(key)) {
-      selected.push(cleanSentence);
-      seen.add(key);
-    }
-  }
-
-  // Add article sentences until we have enough,
-  // but keep the final summary reasonably short.
+  // Prefer the actual article content.
   for (const sentence of contentSentences) {
     const cleanSentence = sentence.trim();
 
@@ -63,8 +48,8 @@ function buildSummary(article) {
 
     const candidate = [...selected, cleanSentence].join(" ");
 
-    // Don't exceed roughly 600 characters.
-    if (candidate.length > 600) {
+    // Keep the summary reasonably sized.
+    if (candidate.length > 900) {
       break;
     }
 
@@ -76,8 +61,28 @@ function buildSummary(article) {
     }
   }
 
-  // If we couldn't build a longer summary,
-  // return whatever useful text we already have.
+  // Use the original excerpt only if the article content
+  // did not provide enough useful sentences.
+  if (selected.length < 3) {
+    for (const sentence of excerptSentences) {
+      const cleanSentence = sentence.trim();
+
+      if (!cleanSentence) continue;
+
+      const key = cleanSentence.toLowerCase();
+
+      if (seen.has(key)) continue;
+
+      selected.push(cleanSentence);
+      seen.add(key);
+
+      if (selected.length >= 5) {
+        break;
+      }
+    }
+  }
+
+  // Final fallback.
   if (selected.length === 0) {
     return summary;
   }
@@ -90,27 +95,17 @@ function formatArticle(article, originalUrl, ogImage = null) {
 
   return {
     title: article.title,
-
     description: buildSummary(article),
-
     content: article.textContent,
-
     author: article.byline,
-
     source: article.siteName,
-
     publishedAt: article.publishedTime,
-
     url: originalUrl,
-
     image: article.image || ogImage || null,
-
     length: article.length,
-
     readingTime: Math.ceil((article.length || 0) / 1000),
   };
 }
-
 
 module.exports = {
   formatArticle,

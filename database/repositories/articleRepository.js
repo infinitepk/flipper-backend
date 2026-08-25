@@ -158,10 +158,11 @@ async function findByCategory(
     id,
     title,
     summary,
+    article_url,
     image_url,
     source,
     rss_category,
-     categories,
+    categories,
     published_at,
     reading_time
 FROM articles

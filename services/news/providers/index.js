@@ -32,7 +32,6 @@ const indiatodayProvider = require("./indiatodayProvider");
 const wiredProvider = require("./wiredProvider");
 const theprintProvider = require("./theprintProvider");
 const newyorktimesProvider = require("./newyorktimesProvider");
-const avideoProvider = require("./avideoProvider");
   
 
 const providers = [
@@ -62,7 +61,6 @@ const providers = [
   theprintProvider,
   southchinamorningpostProvider,
   newyorktimesProvider,
-  avideoProvider,
  
 ];
 

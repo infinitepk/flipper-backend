@@ -1,4 +1,4 @@
-const toiApiProvider = require("./toiApiProvider");
+const toiProvider = require("./toiApiProvider");
 const bbcProvider = require("./bbcProvider");
 const hinduProvider = require("./hinduProvider");
 const indianExpressProvider = require("./indianExpressProvider");
@@ -8,9 +8,10 @@ const spaceProvider = require("./spaceProvider");
 const physOrgProvider = require("./physOrgProvider");
 const scienceDailyProvider = require("./scienceDailyProvider");
 const dwProvider = require("./dwProvider");
- const techcrunchProvider = require("./techcrunchProvider");
-   const aljazeeraProvider = require("./aljazeeraProvider");
+const techcrunchProvider = require("./techcrunchProvider");
+const aljazeeraProvider = require("./aljazeeraProvider");
 const cnbcProvider = require("./cnbcProvider");
+const oneindiaProvider = require("./oneindiaProvider");
 
 const natureProvider = require("./natureProvider");
 const etProvider = require("./etProvider");
@@ -23,14 +24,19 @@ const globalentertainmentProvider = require("./globalentertainmentProvider");
 
 const travelProvider = require("./travelProvider");
 
+const southchinamorningpostProvider = require("./southchinamorningpostProvider");
 
 
 
-
+const indiatodayProvider = require("./indiatodayProvider");
+const wiredProvider = require("./wiredProvider");
+const theprintProvider = require("./theprintProvider");
+const newyorktimesProvider = require("./newyorktimesProvider");
+const avideoProvider = require("./avideoProvider");
   
 
 const providers = [
-  toiApiProvider,
+  toiProvider,
   bbcProvider,
   hinduProvider,
   indianExpressProvider,
@@ -50,11 +56,18 @@ const providers = [
   historyProvider,
   globalentertainmentProvider,
   travelProvider,
+  oneindiaProvider,
+  indiatodayProvider,
+  wiredProvider,
+  theprintProvider,
+  southchinamorningpostProvider,
+  newyorktimesProvider,
+  avideoProvider,
  
 ];
 
 // Temporary for testing
-//module.exports = [globalentertainmentProvider];
+//module.exports = [news18Provider,toiProvider,hinduProvider];
 
-// Normal
+Normal
 module.exports = providers;

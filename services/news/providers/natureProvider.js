@@ -35,10 +35,6 @@ module.exports = createProvider({
   url: "https://www.thehindu.com/sci-tech/energy-and-environment/feeder/default.rss",
 },
 {
-  source: "Mongabay India",
-  url: "https://india.mongabay.com/feed",
-},
-{
   source: "Greenpeace India",
   url: "https://www.greenpeace.org/india/en/feed/",
 },
@@ -54,6 +50,17 @@ module.exports = createProvider({
   source: "Delhi Greens",
   url: "https://delhigreens.com/feed/",
 },
+{
+  source: "Sciencedaily",
+  url: "https://www.sciencedaily.com/rss/earth_climate.xml",
+},
+{
+  source: "Nature.com",
+  url: "https://www.nature.com/nature.rss",
+},
+
+
+
 
 
 ],

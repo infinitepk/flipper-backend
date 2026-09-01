@@ -14,8 +14,9 @@ const {
 } = require("../../../database/repositories/articleRepository");
 
 const {
-  extractImage,
+  extractMedia,
 } = require("../extractor/imageExtractor");
+
 
 const {
   shouldSkipArticle,
@@ -82,21 +83,23 @@ console.log("\nArticle URL:", articleUrl);
 
      
 
-    const imageUrl = await extractImage(item, articleUrl);
+const media = await extractMedia(item, articleUrl);
 
-console.log("Image:", imageUrl);
+console.log("Image:", media.imageUrl);
+console.log("RSS Video:", item.video_url);
 
 
-    const article = {
+const article = {
   title: item.title,
   summary: null,
   article_url: articleUrl,
-  image_url: imageUrl,
+  image_url: media.imageUrl,
+  video_url: item.video_url || null,
   source: item.source,
   rss_category: category,
   published_at: item.publishedAt,
+  status: "pending",
 };
-
 
 if (shouldSkipArticle(article)) {
  console.log(

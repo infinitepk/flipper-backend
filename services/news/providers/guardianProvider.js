@@ -17,5 +17,6 @@ module.exports = createProvider({
         sports: "https://www.theguardian.com/sport/rss",
         entertainment: "https://www.theguardian.com/culture/rss",
         scitech: "https://www.theguardian.com/science/rss",
+        nature: "https://www.theguardian.com/environment/rss",
     },
 });

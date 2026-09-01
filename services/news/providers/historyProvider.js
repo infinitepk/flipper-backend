@@ -27,17 +27,28 @@ module.exports = createProvider({
   url: "https://whc.unesco.org/en/news/rss",
 },
   {
-    source: "Indian Express",
-    url: "https://indianexpress.com/section/lifestyle/art-and-culture/feed/",
-  },
-  {
-    source: "Hindustan Times",
-    url: "https://www.hindustantimes.com/feeds/rss/lifestyle/art-culture/rssfeed.xml",
-  },
+        source: "History Extra",
+        url: "https://www.historyextra.com/feed/",
+      },
+ {
+        source: "ARTnews",
+        url: "https://www.artnews.com/feed/",
+      },
   {
     source: "World History Encyclopedia",
     url: "https://www.worldhistory.org/rss2/?lang=en",
   },
+  {
+        source: "Hyperallergic",
+        url: "https://hyperallergic.com/feed/",
+      },
+
+    
+      {
+        source: "JSTOR Daily",
+        url: "https://daily.jstor.org/feed/",
+      },
+
 ],
 },
 });

@@ -2,38 +2,44 @@ const pool = require("../db");
 
 async function createArticle(article) {
   const query = `
-  INSERT INTO articles (
-    title,
-    summary,
-    article_url,
-    image_url,
-    source,
-    rss_category,
-    categories,
-    published_at
-  )
-  VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-  ON CONFLICT (article_url)
-  DO NOTHING
-  RETURNING *;
-`;
+    INSERT INTO articles (
+      title,
+      summary,
+      content,
+      article_url,
+      image_url,
+      video_url,
+      source,
+      rss_category,
+      categories,
+      published_at,
+      status
+    )
+    VALUES (
+      $1, $2, $3, $4, $5,
+      $6, $7, $8, $9, $10, $11
+    )
+    RETURNING *;
+  `;
 
   const values = [
-  article.title,
-  article.summary,
-  article.article_url,
-  article.image_url,
-  article.source,
-  article.rss_category,
-  article.categories,
-  article.published_at,
-];
+    article.title,
+    article.summary,
+    article.content || null,
+    article.article_url,
+    article.image_url,
+    article.video_url || null,
+    article.source,
+    article.rss_category,
+    article.categories,
+    article.published_at,
+    article.status,
+  ];
 
   const result = await pool.query(query, values);
 
   return result.rows[0];
 }
-
 async function findByUrl(articleUrl) {
   const query = `
     SELECT *
@@ -66,11 +72,12 @@ async function updateArticle(id, article) {
       summary = $1,
       content = $2,
       image_url = $3,
-      author = $4,
-      reading_time = $5,
-      status = $6,
+      video_url = $4,
+      author = $5,
+      reading_time = $6,
+      status = $7,
       updated_at = CURRENT_TIMESTAMP
-    WHERE id = $7
+    WHERE id = $8
     RETURNING *;
   `;
 
@@ -78,6 +85,7 @@ async function updateArticle(id, article) {
     article.summary,
     article.content,
     article.image_url,
+    article.video_url,
     article.author,
     article.reading_time,
     article.status,
@@ -88,6 +96,7 @@ async function updateArticle(id, article) {
 
   return result.rows[0];
 }
+
 
 async function markFailed(id) {
   const query = `
@@ -118,6 +127,7 @@ async function findById(id) {
             summary,
             content,
             image_url,
+            video_url,
             author,
             source,
             rss_category,
@@ -160,6 +170,7 @@ async function findByCategory(
     summary,
     article_url,
     image_url,
+    video_url,
     source,
     rss_category,
     categories,

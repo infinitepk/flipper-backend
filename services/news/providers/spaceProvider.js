@@ -46,7 +46,21 @@ module.exports = createProvider({
   source: "NASA Technology",
   url: "https://www.nasa.gov/news-release/feed/"
 },
- 
+
+{
+  source: "Spaceflight",
+  url: "https://spaceflightnow.com/feed/"
+},
+
+ {
+  source: "Planetary Society",
+  url: "https://www.planetary.org/rss/articles"
+},
+
+{
+  source: "EarthSky",
+  url: "https://earthsky.org/feed/"
+},
 
   
    

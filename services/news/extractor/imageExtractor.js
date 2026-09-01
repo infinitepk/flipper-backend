@@ -1,18 +1,26 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-async function extractImage(article, url) {
+async function extractMedia(article, url) {
+    // 1. RSS image
+    let imageUrl = article.image_url || null;
 
-    // 1. RSS image (fast path)
-    if (article.image_url) {
-        return article.image_url;
+    // 2. RSS enclosure
+    if (!imageUrl && article.enclosure?.url) {
+        imageUrl = article.enclosure.url;
     }
 
-    if (article.enclosure?.url) {
-        return article.enclosure.url;
+    // 3. RSS video
+    let videoUrl = null;
+
+    if (
+        article.enclosure?.url &&
+        article.enclosure?.type?.startsWith("video/")
+    ) {
+        videoUrl = article.enclosure.url;
     }
 
-    // 2. Scrape only if RSS has no image
+    // 4. Fetch article page
     try {
         const response = await axios.get(url, {
             timeout: 10000,
@@ -24,20 +32,56 @@ async function extractImage(article, url) {
 
         const $ = cheerio.load(response.data);
 
-        return (
-            $('meta[property="og:image"]').attr("content") ||
-            $('meta[property="og:image:secure_url"]').attr("content") ||
-            $('meta[name="twitter:image"]').attr("content") ||
-            $('meta[name="twitter:image:src"]').attr("content") ||
-            null
-        );
+        // 5. Image fallback
+        if (!imageUrl) {
+            imageUrl =
+                $('meta[property="og:image"]').attr("content") ||
+                $('meta[property="og:image:secure_url"]').attr("content") ||
+                $('meta[name="twitter:image"]').attr("content") ||
+                $('meta[name="twitter:image:src"]').attr("content") ||
+                null;
+        }
+
+        // 10. Convert relative URLs to absolute URLs
+        if (imageUrl) {
+            imageUrl = makeAbsoluteUrl(imageUrl, url);
+        }
+
+        if (videoUrl) {
+            videoUrl = makeAbsoluteUrl(videoUrl, url);
+        }
 
     } catch (err) {
-        console.error("Image extraction failed:", url);
+        console.error("Media extraction failed:", url);
+        console.error("Error:", err.message);
+        console.error("Status:", err.response?.status);
+    }
+
+    return {
+        imageUrl,
+        videoUrl,
+    };
+}
+
+
+// Backwards compatibility
+async function extractImage(article, url) {
+    const media = await extractMedia(article, url);
+    return media.imageUrl;
+}
+
+
+// URL helper
+function makeAbsoluteUrl(value, baseUrl) {
+    try {
+        return new URL(value, baseUrl).href;
+    } catch {
         return null;
     }
 }
 
+
 module.exports = {
+    extractMedia,
     extractImage,
 };

@@ -1,13 +1,19 @@
 const createProvider = require("./createProvider");
 
 module.exports = createProvider({
-    name: "Al Jazeera",
+  name: "Al Jazeera",
 
-    categories: [
-        "world",
+  categories: [
+    "world",
+    "business",
+    "sports",
+    "entertainment",
+    "scitech",
+  ],
+
+  rssFeeds: {
+    world: [
+      "https://www.aljazeera.com/xml/rss/all.xml",
     ],
-
-    rssFeeds: {
-        world: "https://www.aljazeera.com/xml/rss/all.xml",
-    },
+  },
 });

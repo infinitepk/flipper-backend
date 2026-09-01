@@ -27,13 +27,14 @@ async function processArticle(article) {
     }
 
     const updated = await updateArticle(article.id, {
-      summary: extracted.description,
-      content: extracted.content,
-      image_url: extracted.image,
-      author: extracted.author,
-      reading_time: extracted.readingTime,
-      status: "completed",
-    });
+  summary: extracted.description,
+  content: extracted.content,
+  image_url: extracted.image,
+  video_url: article.video_url,
+  author: extracted.author,
+  reading_time: extracted.readingTime,
+  status: "completed",
+});
 
     console.log(`✓ Completed: ${updated.id}`);
   } catch (err) {

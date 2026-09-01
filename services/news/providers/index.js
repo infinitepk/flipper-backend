@@ -67,5 +67,5 @@ const providers = [
 // Temporary for testing
 //module.exports = [news18Provider,toiProvider,hinduProvider];
 
-Normal
+//Normal
 module.exports = providers;

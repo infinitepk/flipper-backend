@@ -86,14 +86,26 @@ const providers = [
   
   //crimeProvider,
   
-  
-  
-
- 
-];
+  ];
 
 // Temporary for testing
-module.exports = [foxnewsProvider];
+module.exports = [
+
+toiApiProvider,
+bbcProvider,
+hinduProvider,
+guardianProvider,
+physOrgProvider,
+scienceDailyProvider,
+wiredProvider,
+scitechProvider,
+spaceProvider,
+natureProvider,
+historyProvider,
+travelProvider,
+cnbcProvider,
+
+];
 
 //Normal
 //module.exports = providers;

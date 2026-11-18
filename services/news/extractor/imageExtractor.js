@@ -20,41 +20,46 @@ async function extractMedia(article, url) {
         videoUrl = article.enclosure.url;
     }
 
-    // 4. Fetch article page
-    try {
-        const response = await axios.get(url, {
-            timeout: 10000,
-            headers: {
-                "User-Agent":
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137 Safari/537.36",
-            },
-        });
+    // Convert RSS URLs to absolute URLs
+    if (imageUrl) {
+        imageUrl = makeAbsoluteUrl(imageUrl, url);
+    }
 
-        const $ = cheerio.load(response.data);
+    if (videoUrl) {
+        videoUrl = makeAbsoluteUrl(videoUrl, url);
+    }
 
-        // 5. Image fallback
-        if (!imageUrl) {
+    // 4. Only fetch article page if we DON'T have an image
+    if (!imageUrl) {
+        try {
+            const response = await axios.get(url, {
+                timeout: 10000,
+                headers: {
+                    "User-Agent": url.includes("newscientist.com")
+    ? "curl/8.0"
+    : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+                },
+            });
+
+            const $ = cheerio.load(response.data);
+
+            // 5. Image fallback
             imageUrl =
                 $('meta[property="og:image"]').attr("content") ||
                 $('meta[property="og:image:secure_url"]').attr("content") ||
                 $('meta[name="twitter:image"]').attr("content") ||
                 $('meta[name="twitter:image:src"]').attr("content") ||
                 null;
-        }
 
-        // 10. Convert relative URLs to absolute URLs
-        if (imageUrl) {
-            imageUrl = makeAbsoluteUrl(imageUrl, url);
-        }
+            if (imageUrl) {
+                imageUrl = makeAbsoluteUrl(imageUrl, url);
+            }
 
-        if (videoUrl) {
-            videoUrl = makeAbsoluteUrl(videoUrl, url);
+        } catch (err) {
+            console.error("Media extraction failed:", url);
+            console.error("Error:", err.message);
+            console.error("Status:", err.response?.status);
         }
-
-    } catch (err) {
-        console.error("Media extraction failed:", url);
-        console.error("Error:", err.message);
-        console.error("Status:", err.response?.status);
     }
 
     return {

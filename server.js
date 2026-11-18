@@ -4,7 +4,9 @@ const express = require("express");
 const cors = require("cors");
 const feedRoutes = require("./routes/feedRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
-
+const authRoutes = require("./routes/authRoutes");
+const profileRoutes = require("./routes/profileRoutes");
+const interactionRoutes = require("./routes/interactionRoutes");
 
 const app = express();
 
@@ -15,6 +17,11 @@ app.use(express.json());
 app.use("/", feedRoutes);
 
 app.use("/", categoryRoutes);
+
+app.use(authRoutes);
+
+app.use(profileRoutes);
+app.use("/", interactionRoutes);
 
 
 

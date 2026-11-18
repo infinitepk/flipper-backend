@@ -2,6 +2,7 @@ const createProvider = require("./createProvider");
 
 module.exports = createProvider({
     name: "Indian History",
+	
 
     categories: [
         "history",
@@ -9,10 +10,7 @@ module.exports = createProvider({
 
     rssFeeds: {
   history: [
-  {
-    source: "Smithsonian",
-    url: "https://www.smithsonianmag.com/rss/history/",
-  },
+ 
   {
     source: "History Hit",
     url: "https://www.historyhit.com/feed/",

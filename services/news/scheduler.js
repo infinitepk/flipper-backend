@@ -33,13 +33,17 @@ async function runNewsCycle() {
 async function startScheduler() {
   console.log("News scheduler started...");
 
-  // Run immediately when the server starts
-  await runNewsCycle();
+  while (true) {
+    await runNewsCycle();
 
-  // Run every 30 minutes
-  setInterval(() => {
-    runNewsCycle();
-  }, 30 * 60 * 1000);
+    console.log(
+      "Waiting 30 minutes until next news cycle..."
+    );
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, 30 * 60 * 1000)
+    );
+  }
 }
 
 module.exports = {

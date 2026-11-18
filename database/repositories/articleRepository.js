@@ -51,6 +51,28 @@ async function findByUrl(articleUrl) {
 
   return result.rows[0];
 }
+
+async function mergeArticleCategories(articleUrl, newCategories) {
+  const query = `
+    UPDATE articles
+    SET categories = ARRAY(
+      SELECT DISTINCT category
+      FROM unnest(
+        COALESCE(categories, ARRAY[]::text[])
+        || COALESCE($2::text[], ARRAY[]::text[])
+      ) AS category
+    )
+    WHERE article_url = $1
+    RETURNING *;
+  `;
+
+  const result = await pool.query(query, [
+    articleUrl,
+    newCategories,
+  ]);
+
+  return result.rows[0] || null;
+}
 async function findPending(limit = 10) {
   const query = `
     SELECT *
@@ -212,6 +234,7 @@ async function countByCategory(category) {
 module.exports = {
     createArticle,
     findByUrl,
+	mergeArticleCategories,
     findPending,
     updateArticle,
     markFailed,

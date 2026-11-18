@@ -1,4 +1,4 @@
-const toiProvider = require("./toiApiProvider");
+const toiApiProvider = require("./toiApiProvider");
 const bbcProvider = require("./bbcProvider");
 const hinduProvider = require("./hinduProvider");
 const indianExpressProvider = require("./indianExpressProvider");
@@ -32,10 +32,23 @@ const indiatodayProvider = require("./indiatodayProvider");
 const wiredProvider = require("./wiredProvider");
 const theprintProvider = require("./theprintProvider");
 const newyorktimesProvider = require("./newyorktimesProvider");
+const FPJProvider = require("./FPJProvider");
+const scitechProvider = require("./scitechProvider");
+const newscientistProvider = require("./newscientistProvider");
+const latestlyProvider = require("./latestlyProvider");
+const middayProvider = require("./middayProvider");
+const foxnewsProvider = require("./foxnewsProvider");
+
+
+//const crimeProvider = require("./crimeProvider");
+
+
+
+
   
 
 const providers = [
-  toiProvider,
+  toiApiProvider,
   bbcProvider,
   hinduProvider,
   indianExpressProvider,
@@ -61,11 +74,26 @@ const providers = [
   theprintProvider,
   southchinamorningpostProvider,
   newyorktimesProvider,
+  FPJProvider,
+  scitechProvider,
+  newscientistProvider,
+  latestlyProvider,
+  middayProvider,
+  foxnewsProvider,
+  
+ 
+  
+  
+  //crimeProvider,
+  
+  
+  
+
  
 ];
 
 // Temporary for testing
-//module.exports = [news18Provider,toiProvider,hinduProvider];
+module.exports = [foxnewsProvider];
 
 //Normal
-module.exports = providers;
+//module.exports = providers;

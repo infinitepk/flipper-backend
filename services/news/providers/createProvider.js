@@ -1,9 +1,16 @@
 const { fetchArticles } = require("./baseProvider");
 
-function createProvider({ name, categories, rssFeeds }) {
+function createProvider({
+  name,
+  categories,
+  rssFeeds,
+  userAgent,
+  type = "primary",
+}) {
   return {
-    name,
-    categories,
+  name,
+  categories,
+  type,
 
     async getArticles(category) {
 
@@ -23,10 +30,11 @@ function createProvider({ name, categories, rssFeeds }) {
 
   try {
     const fetched = await fetchArticles({
-      source,
-      category,
-      rssUrl,
-    });
+  source,
+  category,
+  rssUrl,
+  userAgent,
+});
 
     articles.push(...fetched);
     console.log(`[${name}] ✓ ${source}: ${fetched.length} articles`);

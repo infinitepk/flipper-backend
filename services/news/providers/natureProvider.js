@@ -2,6 +2,7 @@ createProvider = require("./createProvider");
 
 module.exports = createProvider({
     name: "Nature",
+	
 
     categories: [
         "nature",

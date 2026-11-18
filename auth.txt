@@ -1,0 +1,27 @@
+1. Database
+   users + profiles                    ✅
+
+2. Repository
+   create/find users                    ✅
+
+3. Controller
+   register + login                     ✅
+
+4. Routes
+   /auth/register
+   /auth/login                          ✅
+
+5. Authentication session/token         ⬅️ NEXT
+   ↓
+6. Auth middleware
+   "Is this user actually logged in?"
+   ↓
+7. Profile APIs
+   GET /profile
+   PUT /profile
+   ↓
+8. Forgot Password
+   ↓
+9. Rate limiting + security hardening
+   ↓
+10. Flutter login/signup integration

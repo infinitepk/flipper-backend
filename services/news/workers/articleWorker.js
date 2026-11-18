@@ -1,5 +1,5 @@
 const pLimit = require("p-limit").default;
-const limit = pLimit(4);
+const limit = pLimit(2);
 
 const {
   findPending,
@@ -37,10 +37,15 @@ async function processArticle(article) {
 });
 
     console.log(`✓ Completed: ${updated.id}`);
-  } catch (err) {
-    await markFailed(article.id);
-    console.error(`✗ Failed: ${err.message}`);
-  }
+ } catch (err) {
+  await markFailed(article.id);
+
+  console.error(`✗ Failed article ID: ${article.id}`);
+  console.error(`Title: ${article.title}`);
+  console.error(`URL: ${article.article_url}`);
+  console.error(`HTTP Status: ${err.response?.status ?? "Unknown"}`);
+  console.error(`Error: ${err.message}`);
+}
 }
 
 
@@ -52,7 +57,7 @@ async function processPendingArticles() {
 
 
   while (true) {
-    const articles = await findPending(10);
+    const articles = await findPending(50);
 
     if (articles.length === 0) {
       console.log("No pending articles left.");

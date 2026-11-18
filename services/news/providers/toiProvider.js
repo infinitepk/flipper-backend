@@ -10,6 +10,7 @@ module.exports = createProvider({
     "sports",
     "entertainment",
     "scitech",
+    "nature",
   ],
 
   rssFeeds: {
@@ -118,6 +119,13 @@ module.exports = createProvider({
       {
         source: "TOI Infotech",
         url: "https://timesofindia.indiatimes.com/rssfeeds/5880659.cms",
+      },
+    ],
+
+     nature: [
+      {
+        source: "TOI Science & Environment",
+        url: "https://timesofindia.indiatimes.com/rssfeeds/-2128672765.cms",
       },
     ],
   },

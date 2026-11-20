@@ -1,8 +1,9 @@
+
 const pLimit = require("p-limit").default;
 const limit = pLimit(2);
 
 const {
-  findPending,
+  findRecentPending,
   updateArticle,
   markFailed,
 } = require("../../../database/repositories/articleRepository");
@@ -10,9 +11,6 @@ const {
 const {
   extractArticle,
 } = require("../extractor/articleExtractor");
-
-
-///seperate funtion
 
 async function processArticle(article) {
   console.log(`Processing: ${article.title}`);
@@ -23,54 +21,71 @@ async function processArticle(article) {
     if (!extracted) {
       await markFailed(article.id);
       console.log(`✗ Marked as failed: ${article.id}`);
-      return;
+      return false;
     }
 
     const updated = await updateArticle(article.id, {
-  summary: extracted.description,
-  content: extracted.content,
-  image_url: extracted.image,
-  video_url: article.video_url,
-  author: extracted.author,
-  reading_time: extracted.readingTime,
-  status: "completed",
-});
+      summary: extracted.description,
+      content: extracted.content,
+      image_url: extracted.image,
+      video_url: article.video_url,
+      author: extracted.author,
+      reading_time: extracted.readingTime,
+      status: "completed",
+    });
 
     console.log(`✓ Completed: ${updated.id}`);
- } catch (err) {
-  await markFailed(article.id);
+    return true;
 
-  console.error(`✗ Failed article ID: ${article.id}`);
-  console.error(`Title: ${article.title}`);
-  console.error(`URL: ${article.article_url}`);
-  console.error(`HTTP Status: ${err.response?.status ?? "Unknown"}`);
-  console.error(`Error: ${err.message}`);
+  } catch (err) {
+    await markFailed(article.id);
+
+    console.error(`✗ Failed article ID: ${article.id}`);
+    console.error(`Title: ${article.title}`);
+    console.error(`URL: ${article.article_url}`);
+    console.error(`Error: ${err.message}`);
+
+    return false;
+  }
 }
-}
-
-
-
-
 
 async function processPendingArticles() {
+  console.log("================================");
+  console.log("FLIPPER ARTICLE PROCESSOR");
+  console.log("================================");
 
+  const articles = await findRecentPending();
 
+  const batch = articles.slice(0, 100);
 
-  while (true) {
-    const articles = await findPending(50);
+  console.log(`Recent pending articles: ${articles.length}`);
+  console.log(`Processing this batch: ${batch.length}`);
 
-    if (articles.length === 0) {
-      console.log("No pending articles left.");
-      break;
-    }
+  if (batch.length === 0) {
+    console.log("No recent pending articles found.");
+    return;
+  }
 
-    await Promise.all(
-  articles.map(article =>
-    limit(() => processArticle(article))
-  )
-);
-  } // <-- closes while
-} // <-- closes function
+  let completed = 0;
+  let failed = 0;
+
+  await Promise.all(
+    batch.map(article =>
+      limit(async () => {
+        const result = await processArticle(article);
+        if (result) completed++;
+        else failed++;
+      })
+    )
+  );
+
+  console.log("================================");
+  console.log("PROCESSING SUMMARY");
+  console.log(`Selected: ${batch.length}`);
+  console.log(`Completed: ${completed}`);
+  console.log(`Failed: ${failed}`);
+  console.log("================================");
+}
 
 module.exports = {
   processPendingArticles,

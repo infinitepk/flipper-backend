@@ -73,17 +73,18 @@ async function mergeArticleCategories(articleUrl, newCategories) {
 
   return result.rows[0] || null;
 }
-async function findPending(limit = 10) {
+
+async function findRecentPending() {
   const query = `
     SELECT *
     FROM articles
     WHERE status = 'pending'
-    ORDER BY published_at DESC
-    LIMIT $1;
+      AND created_at >= CURRENT_DATE - INTERVAL '4 days'
+      AND created_at < CURRENT_DATE + INTERVAL '1 day'
+    ORDER BY created_at DESC;
   `;
 
-  const result = await pool.query(query, [limit]);
-
+  const result = await pool.query(query);
   return result.rows;
 }
 
@@ -235,7 +236,7 @@ module.exports = {
     createArticle,
     findByUrl,
 	mergeArticleCategories,
-    findPending,
+    findRecentPending,
     updateArticle,
     markFailed,
     findById,

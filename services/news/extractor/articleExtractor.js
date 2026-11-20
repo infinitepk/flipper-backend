@@ -1,3 +1,4 @@
+
 const axios = require("axios");
 const { Readability } = require("@mozilla/readability");
 const { JSDOM } = require("jsdom");
@@ -23,10 +24,7 @@ async function extractArticle(url) {
         timeout: 15000,
       });
 
-      const dom = new JSDOM(response.data, {
-        url,
-      });
-
+      const dom = new JSDOM(response.data, { url });
       const document = dom.window.document;
 
       const ogImage =
@@ -38,8 +36,7 @@ async function extractArticle(url) {
           ?.getAttribute("content") ||
         null;
 
-      const reader = new Readability(dom.window.document);
-
+      const reader = new Readability(document);
       const article = reader.parse();
 
       if (!article) {
@@ -64,13 +61,16 @@ async function extractArticle(url) {
           const retrySeconds = Number(retryAfter);
 
           if (Number.isFinite(retrySeconds)) {
-            delay = Math.min(retrySeconds * 1000, MAX_RETRY_DELAY);
+            delay = Math.min(
+              retrySeconds * 1000,
+              MAX_RETRY_DELAY
+            );
           }
         }
 
         console.log(
           `[Article Extractor] Retry ${attempt + 1}/${MAX_RETRIES} ` +
-            `after ${Math.ceil(delay / 1000)}s: ${url} — ${error.message}`
+          `after ${Math.ceil(delay / 1000)}s: ${url} — ${error.message}`
         );
 
         await sleep(delay);
@@ -83,8 +83,10 @@ async function extractArticle(url) {
 
       return null;
     }
-  } // Added missing brace for the 'for' loop
-} // Added missing brace for the 'extractArticle' function
+  }
+
+  return null;
+}
 
 module.exports = {
   extractArticle,

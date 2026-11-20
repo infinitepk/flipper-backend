@@ -34,5 +34,9 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 
-    startScheduler();
+    if (process.env.ENABLE_NEWS_SCHEDULER === "true") {
+        startScheduler();
+    } else {
+        console.log("News scheduler disabled. GitHub Actions handles news fetching.");
+    }
 });

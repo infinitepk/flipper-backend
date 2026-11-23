@@ -10,6 +10,11 @@ module.exports = createProvider({
 
     rssFeeds: {
   nature: [
+  
+  {
+        source: "TOI Science & Environment",
+        url: "https://timesofindia.indiatimes.com/rssfeeds/-2128672765.cms",
+      },
   {
   source: "Mongabay",
   url: "https://news.mongabay.com/feed/",

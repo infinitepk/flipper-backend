@@ -93,19 +93,24 @@ module.exports = [
 
 toiApiProvider,
 bbcProvider,
+dwProvider,
 hinduProvider,
+news18Provider,
 guardianProvider,
 physOrgProvider,
 scienceDailyProvider,
 wiredProvider,
 scitechProvider,
+techcrunchProvider,
 spaceProvider,
 natureProvider,
 historyProvider,
 travelProvider,
 cnbcProvider,
+newscientistProvider,
 
 ];
 
 //Normal
 //module.exports = providers;
+

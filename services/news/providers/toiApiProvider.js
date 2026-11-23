@@ -112,10 +112,6 @@ module.exports = createProvider({
         url: "https://timesofindia.indiatimes.com/rssfeeds/66949542.cms",
       },
       {
-        source: "TOI Science & Environment",
-        url: "https://timesofindia.indiatimes.com/rssfeeds/-2128672765.cms",
-      },
-      {
         source: "TOI Infotech",
         url: "https://timesofindia.indiatimes.com/rssfeeds/5880659.cms",
       },

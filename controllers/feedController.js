@@ -4,6 +4,8 @@ const {
     findByCategory,
     countByCategory,
     searchByHeadline,
+	getPopularStories,
+	getTrendingTopics,
 } = require("../database/repositories/articleRepository");
 
 
@@ -143,9 +145,55 @@ async function searchArticles(req, res) {
     }
 }
 
+async function getPopularFeed(req, res) {
+    try {
+        const requestedLimit = parseInt(req.query.limit, 10) || 20;
+        const limit = Math.min(Math.max(requestedLimit, 1), 50);
+
+        const articles = await getPopularStories(limit);
+
+        return res.json({
+            articles,
+        });
+
+    } catch (error) {
+        console.error("Popular Stories API error:", error);
+
+        return res.status(500).json({
+            message: "Failed to fetch popular stories",
+        });
+    }
+}
+
+// ====================
+// Trending Topics Feed
+// ====================
+
+async function getTrendingTopicsFeed(req, res) {
+    try {
+        const limit = Math.min(
+            Math.max(parseInt(req.query.limit) || 10, 1),
+            20
+        );
+
+        const topics = await getTrendingTopics(limit);
+
+        res.json({ topics });
+
+    } catch (error) {
+        console.error("TRENDING TOPICS ERROR:", error);
+
+        res.status(500).json({
+            error: "Failed to fetch Trending Topics"
+        });
+    }
+}
+
 
 module.exports = {
     getFeed,
     getArticle,
 	searchArticles,
+	getPopularFeed,
+	getTrendingTopicsFeed,
 };

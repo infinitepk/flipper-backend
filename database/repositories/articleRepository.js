@@ -262,6 +262,191 @@ async function searchByHeadline(keyword) {
     return result.rows;
 }
 
+// ====================
+// Popular Stories
+// ====================
+
+async function getPopularStories(limit = 20) {
+    const result = await pool.query(
+        `
+        SELECT
+            a.id,
+            a.title,
+            a.summary,
+            a.article_url,
+            a.image_url,
+            a.video_url,
+            a.source,
+            a.categories,
+            a.published_at,
+            a.reading_time,
+
+            COALESCE(r.likes, 0)::int AS likes,
+            COALESCE(c.comment_count, 0)::int AS comment_count,
+
+            (
+                (
+                    COALESCE(r.likes, 0) * 2 +
+                    COALESCE(c.comment_count, 0) * 3
+                )::numeric
+                /
+                (
+                    1 + GREATEST(
+                        EXTRACT(EPOCH FROM (
+                            NOW() - COALESCE(a.published_at, NOW())
+                        )) / 3600,
+                        0
+                    ) / 24
+                )
+            ) AS popularity_score
+
+        FROM articles a
+
+        LEFT JOIN (
+            SELECT
+                article_id,
+                COUNT(*) FILTER (
+                    WHERE reaction = 'like'
+                ) AS likes
+            FROM article_reactions
+            GROUP BY article_id
+        ) r ON r.article_id = a.id
+
+        LEFT JOIN (
+            SELECT
+                article_id,
+                COUNT(*) AS comment_count
+            FROM comments
+            GROUP BY article_id
+        ) c ON c.article_id = a.id
+
+        WHERE a.status = 'completed'
+
+        ORDER BY popularity_score DESC, a.published_at DESC
+
+        LIMIT $1;
+        `,
+        [limit]
+    );
+
+    return result.rows;
+}
+
+// ====================
+// Trending Topics
+// ====================
+
+// ====================
+// Trending Topics
+// ====================
+
+async function getTrendingTopics(limit = 10) {
+    const result = await pool.query(
+        `
+        WITH recent_articles AS (
+            SELECT id, title, published_at
+            FROM articles
+            WHERE status = 'completed'
+            AND published_at >= NOW() - INTERVAL '48 hours'
+            AND published_at <= NOW()
+        ),
+
+        words AS (
+            SELECT
+                a.id AS article_id,
+                a.published_at,
+                LOWER(w.word) AS word,
+                w.position
+            FROM recent_articles a
+            CROSS JOIN LATERAL regexp_split_to_table(
+                a.title,
+                '[^[:alnum:]]+'
+            ) WITH ORDINALITY AS w(word, position)
+        ),
+
+        word_pairs AS (
+            SELECT
+                article_id,
+                published_at,
+                word,
+                LEAD(word) OVER (
+                    PARTITION BY article_id
+                    ORDER BY position
+                ) AS next_word
+            FROM words
+        ),
+
+        phrases AS (
+            SELECT
+                word || ' ' || next_word AS topic,
+                article_id,
+                published_at
+            FROM word_pairs
+            WHERE next_word IS NOT NULL
+
+            AND LENGTH(word) >= 3
+            AND LENGTH(next_word) >= 3
+
+            AND word ~ '[a-z]'
+            AND next_word ~ '[a-z]'
+
+            AND word NOT IN (
+                'the', 'and', 'for', 'with', 'from',
+                'this', 'that', 'have', 'been', 'will',
+                'after', 'before', 'over', 'under', 'into',
+                'about', 'their', 'they', 'them', 'what',
+                'when', 'where', 'which', 'while', 'also',
+                'more', 'than', 'says', 'said', 'amid',
+                'here', 'against', 'latest', 'breaking',
+                'update', 'updates', 'news', 'report',
+                'reports', 'today', 'live'
+            )
+
+            AND next_word NOT IN (
+                'the', 'and', 'for', 'with', 'from',
+                'this', 'that', 'have', 'been', 'will',
+                'after', 'before', 'over', 'under', 'into',
+                'about', 'their', 'they', 'them', 'what',
+                'when', 'where', 'which', 'while', 'also',
+                'more', 'than', 'says', 'said', 'amid',
+                'here', 'against', 'latest', 'breaking',
+                'update', 'updates', 'news', 'report',
+                'reports', 'today', 'live'
+            )
+		
+        )
+
+        SELECT
+            topic,
+            COUNT(DISTINCT article_id)::int AS article_count,
+            MAX(published_at) AS latest_article_at
+
+        FROM phrases
+
+GROUP BY topic
+
+HAVING COUNT(DISTINCT article_id) >= 2
+
+AND topic NOT IN (
+    'price history',
+    'stock price',
+    'share price',
+    'price highlights',
+    'year old'
+)
+
+        ORDER BY
+            article_count DESC,
+            latest_article_at DESC
+
+        LIMIT $1;
+        `,
+        [limit]
+    );
+
+    return result.rows;
+}
+
 
 module.exports = {
     createArticle,
@@ -274,4 +459,6 @@ module.exports = {
     findByCategory,
     countByCategory,
 	searchByHeadline,
+	getPopularStories,
+	getTrendingTopics,
 };

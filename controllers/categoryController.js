@@ -21,8 +21,12 @@ const excludeIds = req.query.exclude
     limit,
     excludeIds
 );
-const total = await countByCategory(category);
-const hasMore = page * limit < total;
+const total = await countByCategory(category, [
+    ...excludeIds,
+    ...articles.map(article => article.id),
+]);
+
+const hasMore = total > 0;
 
     res.json({
     page,

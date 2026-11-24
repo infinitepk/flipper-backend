@@ -6,7 +6,7 @@ module.exports = createProvider({
   userAgent: "curl/8.0",
 
   categories: [
-    "sci-tech",
+    "scitech",
     "space",
   ],
 

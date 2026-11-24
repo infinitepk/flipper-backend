@@ -56,7 +56,7 @@ async function processPendingArticles() {
 
   const articles = await findRecentPending();
 
-  const batch = articles.slice(0, 100);
+  const batch = articles;
 
   console.log(`Recent pending articles: ${articles.length}`);
   console.log(`Processing this batch: ${batch.length}`);

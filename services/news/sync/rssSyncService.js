@@ -11,11 +11,7 @@ const {
 const {
   createArticle,
   findByUrl,
-  mergeArticleCategories,
 } = require("../../../database/repositories/articleRepository");
-
-
-
 
 const {
   shouldSkipArticle,
@@ -55,7 +51,6 @@ for (const provider of providers) {
 
 console.log("\nAll providers synced successfully.");
 
-  console.log("\nAll providers synced successfully.");
 }
 
 async function syncCategory(provider = null, category = null) {
@@ -94,6 +89,46 @@ const article = {
 };
 
 
+// ========================================
+// ARTICLE FRESHNESS FILTER (5 DAYS)
+// ========================================
+
+if (article.published_at) {
+  const publishedDate = new Date(article.published_at);
+
+  // Reject invalid publication dates
+  if (Number.isNaN(publishedDate.getTime())) {
+    console.log(
+      `[${provider.name}] Rejected: invalid publication date: ${article.title}`
+    );
+    continue;
+  }
+
+  const ageInMs = Date.now() - publishedDate.getTime();
+  const fiveDaysInMs = 5 * 24 * 60 * 60 * 1000;
+
+  // Reject articles older than 5 days
+  if (ageInMs > fiveDaysInMs) {
+    console.log(
+      `[${provider.name}] Rejected: older than 5 days: ${article.title}`
+    );
+    continue;
+  }
+
+  // Reject future-dated articles
+  if (ageInMs < 0) {
+    console.log(
+      `[${provider.name}] Rejected: future-dated article: ${article.title}`
+    );
+    continue;
+  }
+} else {
+  console.log(
+    `[${provider.name}] Missing publication date. Allowing fallback: ${article.title}`
+  );
+}
+
+
 if (shouldSkipArticle(article)) {
  console.log(
   `[${provider.name}] Skipped article: ${article.title}`
@@ -121,21 +156,15 @@ if (
   continue;
 }
 
-// If the article already exists, merge its newly discovered categories.
+
+
+// If the article already exists, keep its existing category.
+
 
 if (existingArticle) {
-  const mergedCategories = [
-    ...new Set([
-      ...(existingArticle.categories || []),
-      ...article.categories,
-    ]),
-  ];
-
-  await mergeArticleCategories(articleUrl, mergedCategories);
-
   console.log(
-    `[${provider.name}] Existing article categories merged:`,
-    mergedCategories
+    `[${provider.name}] Article already exists. Keeping its category:`,
+    existingArticle.categories
   );
 
   continue;
@@ -148,7 +177,11 @@ console.log("RSS Category:", article.rss_category);
 console.log("Flipper Categories:", article.categories);
 console.log("==========================");
 
+
+
+
 console.log(article);
+
 
 await createArticle(article);
 

@@ -1,8 +1,3 @@
-
-const LanguageDetect = require("languagedetect");
-
-const lngDetector = new LanguageDetect();
-
 const BLOCKED_KEYWORDS = [
   "lottery",
   "winning numbers",
@@ -17,6 +12,7 @@ const BLOCKED_KEYWORDS = [
   "zodiac",
   "numerology",
   "lucky number",
+  "Baby names",
 
   "dream11",
   "fantasy cricket",
@@ -40,45 +36,15 @@ function isEnglishArticle(article) {
     return false;
   }
 
+  // Reject Hindi text written in Devanagari.
   const hasDevanagari = (text) => /[\u0900-\u097F]/.test(text);
 
-  // Reject titles containing Hindi text.
-  if (hasDevanagari(title)) {
+  if (hasDevanagari(title) || hasDevanagari(summary)) {
     return false;
   }
 
-  // Reject titles that are clearly non-English.
-  if (title.length >= 30) {
-    const titleLanguage = lngDetector.detect(title, 1);
-
-    if (
-      titleLanguage.length > 0 &&
-      titleLanguage[0][0] !== "english"
-    ) {
-      return false;
-    }
-  }
-
-  // Check the RSS description independently.
-  if (summary.length >= 30) {
-    if (hasDevanagari(summary)) {
-      return false;
-    }
-
-    const summaryLanguage = lngDetector.detect(summary, 1);
-
-    if (
-      summaryLanguage.length > 0 &&
-      summaryLanguage[0][0] !== "english"
-    ) {
-      return false;
-    }
-  }
-
-  // Require enough text to make a reasonable language decision.
-  if (title.length < 30 && summary.length < 30) {
-    return false;
-  }
+  // Do not use aggressive language detection.
+  // RSS providers are responsible for supplying English-language feeds.
 
   return true;
 }
@@ -86,7 +52,7 @@ function isEnglishArticle(article) {
 function shouldSkipArticle(article) {
   const text = `${article.title || ""} ${article.summary || ""}`.toLowerCase();
 
-  // Reject non-English articles.
+  // Reject non-English content.
   if (!isEnglishArticle(article)) {
     return true;
   }
@@ -99,4 +65,3 @@ module.exports = {
   shouldSkipArticle,
   isEnglishArticle,
 };
-

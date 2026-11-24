@@ -2,6 +2,8 @@
 const {
     findById,
     findByCategory,
+    countByCategory,
+    searchByHeadline,
 } = require("../database/repositories/articleRepository");
 
 
@@ -11,23 +13,35 @@ async function getFeed(req, res) {
 
 console.log("FEED API HIT");
 
-    const quotas = [
-    ["india", 3],
-    ["world", 3],
-    ["business", 2],
-    ["sports", 2],
-    ["scitech", 2],
-    ["entertainment", 2],
+
+const excludeIds = req.query.exclude
+    ? req.query.exclude.split(",").map(Number)
+    : [];
+
+    const categories = [
+    "india",
+    "world",
+    "business",
+    "sports",
+    "scitech",
+    "entertainment",
 ];
+
+const batchSize = 30;
 
     const categoryArticles = {};
 
      console.log("Connected to database...");
 
     // Fetch articles for each category
-    for (const [category, limit] of quotas) {
+    for (const category of categories) {
 
-        const articles = await findByCategory(category, 1, limit);
+        const articles = await findByCategory(
+    category,
+    1,
+    batchSize,
+    excludeIds
+);
 
  console.log(category, articles.length);
 
@@ -43,20 +57,22 @@ console.log("FEED API HIT");
 
     let added = true;
 
-    while (added) {
+    while (added && handpicked.length < batchSize) {
 
         added = false;
 
-        for (const [category] of quotas) {
+        for (const category of categories) {
 
             if (
                 categoryArticles[category] &&
                 categoryArticles[category].length > 0
             ) {
 
-                handpicked.push(
-                    categoryArticles[category].shift()
-                );
+                const article = categoryArticles[category].shift();
+
+             if (!handpicked.some(item => item.id === article.id)) {
+              handpicked.push(article);
+                  }
 
                 added = true;
             }
@@ -67,7 +83,23 @@ console.log(
     handpicked.map(article => article.categories)
 );
 
-    res.json(handpicked);
+    const returnedIds = handpicked.map(article => article.id);
+
+const remainingCounts = await Promise.all(
+    categories.map(category =>
+        countByCategory(category, [
+            ...excludeIds,
+            ...returnedIds,
+        ])
+    )
+);
+
+const hasMore = remainingCounts.some(count => count > 0);
+
+res.json({
+    articles: handpicked,
+    hasMore,
+});
 
 }
 
@@ -86,8 +118,34 @@ async function getArticle(req, res) {
     res.json(article);
 }
 
+async function searchArticles(req, res) {
+    try {
+        const keyword = (req.query.q || "").trim();
+
+        if (!keyword) {
+            return res.status(400).json({
+                message: "Search keyword is required",
+            });
+        }
+
+        const articles = await searchByHeadline(keyword);
+
+        return res.json({
+            articles,
+        });
+
+    } catch (error) {
+        console.error("Search API error:", error);
+
+        return res.status(500).json({
+            message: "Failed to search articles",
+        });
+    }
+}
+
 
 module.exports = {
     getFeed,
     getArticle,
+	searchArticles,
 };

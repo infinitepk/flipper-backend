@@ -5,7 +5,7 @@ name: "Sci-Tech",
 
 
 categories: [
-    "sci-tech",
+    "scitech",
 ],
 
 rssFeeds: {

@@ -52,39 +52,40 @@ async function findByUrl(articleUrl) {
   return result.rows[0];
 }
 
-async function mergeArticleCategories(articleUrl, newCategories) {
-  const query = `
-    UPDATE articles
-    SET categories = ARRAY(
-      SELECT DISTINCT category
-      FROM unnest(
-        COALESCE(categories, ARRAY[]::text[])
-        || COALESCE($2::text[], ARRAY[]::text[])
-      ) AS category
-    )
-    WHERE article_url = $1
-    RETURNING *;
-  `;
-
-  const result = await pool.query(query, [
-    articleUrl,
-    newCategories,
-  ]);
-
-  return result.rows[0] || null;
-}
 
 async function findRecentPending() {
   const query = `
+    WITH recent_dated AS (
+      SELECT *
+      FROM articles
+      WHERE status = 'pending'
+        AND published_at IS NOT NULL
+        AND published_at >= timezone('UTC', NOW()) - INTERVAL '5 days'
+AND published_at <= timezone('UTC', NOW())
+    ),
+
+    undated AS (
+      SELECT *
+      FROM articles
+      WHERE status = 'pending'
+        AND published_at IS NULL
+      ORDER BY created_at DESC
+      LIMIT 25
+    )
+
     SELECT *
-    FROM articles
-    WHERE status = 'pending'
-      AND created_at >= CURRENT_DATE - INTERVAL '4 days'
-      AND created_at < CURRENT_DATE + INTERVAL '1 day'
-    ORDER BY created_at DESC;
+    FROM recent_dated
+
+    UNION ALL
+
+    SELECT *
+    FROM undated
+
+    ORDER BY published_at DESC NULLS LAST, created_at DESC;
   `;
 
   const result = await pool.query(query);
+
   return result.rows;
 }
 
@@ -99,7 +100,7 @@ async function updateArticle(id, article) {
       author = $5,
       reading_time = $6,
       status = $7,
-      updated_at = CURRENT_TIMESTAMP
+      updated_at = (timezone('UTC', NOW()))
     WHERE id = $8
     RETURNING *;
   `;
@@ -126,7 +127,7 @@ async function markFailed(id) {
     UPDATE articles
     SET
       status = 'failed',
-      updated_at = CURRENT_TIMESTAMP
+      updated_at = timezone('UTC', NOW())
     WHERE id = $1
     RETURNING *;
   `;
@@ -217,29 +218,60 @@ OFFSET $3;
 }
 
 
-async function countByCategory(category) {
+async function countByCategory(category, excludeIds = []) {
     const result = await pool.query(
         `
-        SELECT COUNT(*) AS total
+        SELECT COUNT(*) 
         FROM articles
         WHERE $1 = ANY(categories)
         AND status = 'completed'
+        AND (
+            cardinality($2::int[]) = 0
+            OR NOT (id = ANY($2::int[]))
+        )
         `,
-        [category]
+        [category, excludeIds]
     );
 
-    return parseInt(result.rows[0].total);
+    return parseInt(result.rows[0].count, 10);
+}
+
+async function searchByHeadline(keyword) {
+    const result = await pool.query(
+        `
+        SELECT
+            id,
+            title,
+            summary,
+            article_url,
+            image_url,
+            video_url,
+            source,
+            categories,
+            published_at,
+            reading_time
+        FROM articles
+        WHERE status = 'completed'
+        AND title ILIKE '%' || $1 || '%'
+        ORDER BY published_at DESC
+        LIMIT 50;
+        `,
+        [keyword]
+    );
+
+    return result.rows;
 }
 
 
 module.exports = {
     createArticle,
     findByUrl,
-	mergeArticleCategories,
+
     findRecentPending,
     updateArticle,
     markFailed,
     findById,
     findByCategory,
     countByCategory,
+	searchByHeadline,
 };

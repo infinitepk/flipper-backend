@@ -91,7 +91,30 @@ const providers = [
 // Temporary for testing
 module.exports = [
 
-    news18Provider,
+    toiApiProvider,
+  
+  hinduProvider,
+  
+  guardianProvider,
+  spaceProvider,
+  physOrgProvider,
+  scienceDailyProvider,
+ 
+  techcrunchProvider,
+  
+  natureProvider,
+  etProvider,
+  
+  historyProvider,
+  
+  travelProvider,
+  oneindiaProvider,
+
+  wiredProvider,
+ 
+  
+  scitechProvider,
+  newscientistProvider,
 
 ];
 
